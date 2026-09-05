@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A private, offline question-answering assistant for local documents."
+    />
+    <title>Local Knowledge Assistant</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Knowledge base information">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M6 4.8A2.8 2.8 0 0 1 8.8 2h6.4A2.8 2.8 0 0 1 18 4.8v14.4a2.8 2.8 0 0 1-2.8 2.8H8.8A2.8 2.8 0 0 1 6 19.2V4.8Z" />
+              <path d="M9 7h6M9 11h6M9 15h4" />
+            </svg>
+          </div>
+          <div>
+            <p class="eyebrow">MICROSOFT FOUNDRY LOCAL</p>
+            <h1>Knowledge Assistant</h1>
+          </div>
+        </div>
+
+        <button class="new-chat-button" id="new-chat-button" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          New conversation
+        </button>
+
+        <section class="chats-section" aria-labelledby="chats-title">
+          <div class="section-heading">
+            <h2 id="chats-title">Regular chats</h2>
+            <span class="local-label">Saved locally</span>
+          </div>
+          <ul class="chat-list" id="chat-list"></ul>
+        </section>
+
+        <section class="private-chats-section" aria-labelledby="private-chats-title">
+          <div class="section-heading">
+            <h2 id="private-chats-title">Private chats</h2>
+            <span class="vault-state" id="vault-state">Locked</span>
+          </div>
+          <button class="private-access-button" id="private-access-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="5" y="10" width="14" height="11" rx="2" />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+            </svg>
+            <span id="private-access-label">Create private space</span>
+          </button>
+          <div class="private-chat-content" id="private-chat-content" hidden>
+            <button class="new-private-chat-button" id="new-private-chat-button" type="button">
+              <span aria-hidden="true">+</span> New private chat
+            </button>
+            <ul class="chat-list private-chat-list" id="private-chat-list"></ul>
+            <div class="private-documents-panel">
+              <div class="private-documents-heading">
+                <div>
+                  <strong>Private documents</strong>
+                  <small>Used only in private chats</small>
+                </div>
+                <span id="private-document-summary">0 files</span>
+              </div>
+              <ul class="private-document-list" id="private-document-list">
+                <li class="muted-list-item">No private files yet</li>
+              </ul>
+              <label
+                class="private-drop-zone"
+                id="private-drop-zone"
+                for="private-document-input"
+              >
+                <input
+                  id="private-document-input"
+                  type="file"
+                  accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
+                  multiple
+                />
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" />
+                  <path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+                </svg>
+                <span>
+                  <strong id="private-drop-zone-status">Add private documents</strong>
+                  <small>TXT, MD, or PDF · 10 MB max</small>
+                </span>
+              </label>
+            </div>
+          </div>
+          <p class="private-help" id="private-help">Password-protected conversations for sensitive questions.</p>
+        </section>
+
+        <section class="status-card" aria-labelledby="system-status-title">
+          <div class="section-heading">
+            <h2 id="system-status-title">Local AI status</h2>
+            <span class="status-pill" id="status-pill">
+              <span class="status-dot"></span>
+              <span id="status-text">Checking</span>
+            </span>
+          </div>
+          <dl class="metrics">
+            <div>
+              <dt>Documents</dt>
+              <dd id="document-count">—</dd>
+            </div>
+            <div>
+              <dt>Search chunks</dt>
+              <dd id="chunk-count">—</dd>
+            </div>
+          </dl>
+          <button class="secondary-button" id="reindex-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 11a8 8 0 1 0-2.34 5.66M20 4v7h-7" />
+            </svg>
+            Update knowledge base
+          </button>
+          <p class="status-help" id="status-help">Your files stay on this Mac.</p>
+        </section>
+
+        <section class="documents-section" aria-labelledby="documents-title">
+          <div class="section-heading">
+            <div>
+              <h2 id="documents-title">Knowledge base</h2>
+              <p class="section-copy">Files available for the assistant to search</p>
+            </div>
+          </div>
+          <ul class="document-list" id="document-list">
+            <li class="muted-list-item">Loading files…</li>
+          </ul>
+          <label class="drop-zone" id="drop-zone" for="document-input">
+            <input
+              id="document-input"
+              type="file"
+              accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
+              multiple
+            />
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" />
+              <path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+            </svg>
+            <strong id="drop-zone-status">Drop documents here</strong>
+            <span>or click to browse · TXT, MD, PDF · 10 MB max</span>
+          </label>
+        </section>
+
+        <div class="privacy-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="10" width="14" height="11" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
+          <div>
+            <strong>Offline by design</strong>
+            <span>Questions are processed locally.</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">LOCAL DOCUMENT ASSISTANT</p>
+            <div class="conversation-heading">
+              <h2 id="conversation-title">New conversation</h2>
+              <span class="private-mode-badge" id="private-mode-badge" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="5" y="10" width="14" height="11" rx="2" />
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+                Private
+              </span>
+            </div>
+          </div>
+          <div class="model-badge" id="model-badge" title="Local model runtime">
+            <span class="model-icon" aria-hidden="true">AI</span>
+            <span>
+              <small id="runtime-name">Local runtime</small>
+              <strong id="active-model">Loading…</strong>
+            </span>
+          </div>
+        </header>
+
+        <section class="conversation" id="conversation" aria-live="polite">
+          <div class="welcome-card" id="welcome-card">
+            <div class="welcome-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3 3 7.5 12 12l9-4.5L12 3Z" />
+                <path d="m5.5 10 6.5 3.3 6.5-3.3v5.5L12 19l-6.5-3.5V10Z" />
+              </svg>
+            </div>
+            <p class="eyebrow">READY TO SEARCH</p>
+            <h3>Ask your files, not the internet.</h3>
+            <p>
+              Ask a question in everyday language. The assistant searches your local
+              knowledge base, answers with Foundry Local, and shows the sources it used.
+            </p>
+            <div class="workflow" aria-label="How this assistant works">
+              <div>
+                <span>1</span>
+                <strong>Add files</strong>
+                <small>TXT, MD, or PDF</small>
+              </div>
+              <div class="workflow-arrow" aria-hidden="true">→</div>
+              <div>
+                <span>2</span>
+                <strong>Ask naturally</strong>
+                <small>Use your own words</small>
+              </div>
+              <div class="workflow-arrow" aria-hidden="true">→</div>
+              <div>
+                <span>3</span>
+                <strong>Verify sources</strong>
+                <small>See retrieved chunks</small>
+              </div>
+            </div>
+            <p class="try-label">Try asking</p>
+            <div class="suggestions" aria-label="Suggested questions">
+              <button class="suggestion" type="button">What are the three stages of RAG?</button>
+              <button class="suggestion" type="button">How does this system work offline?</button>
+              <button class="suggestion" type="button">Summarize my documents.</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="composer-wrap">
+          <form class="composer" id="question-form">
+            <label class="sr-only" for="question-input">Ask a question</label>
+            <textarea
+              id="question-input"
+              rows="1"
+              maxlength="2000"
+              placeholder="Ask about your documents…"
+              autocomplete="off"
+              aria-describedby="composer-note"
+            ></textarea>
+            <button class="send-button" id="send-button" type="submit" aria-label="Send question">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 12 14-7-4 14-3-6-7-1Z" />
+              </svg>
+            </button>
+          </form>
+          <p class="composer-note" id="composer-note">
+            Answers use indexed files only · Enter to send · Shift + Enter for a new line
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog class="vault-dialog" id="vault-dialog" aria-labelledby="vault-dialog-title">
+      <form class="vault-form" id="vault-form">
+        <button class="dialog-close" id="vault-dialog-close" type="button" aria-label="Close">
+          ×
+        </button>
+        <div class="vault-dialog-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="10" width="14" height="11" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
+        </div>
+        <p class="eyebrow">LOCAL ENCRYPTED SPACE</p>
+        <h2 id="vault-dialog-title">Create private chats</h2>
+        <p class="vault-dialog-copy" id="vault-dialog-copy">
+          Choose a password for encrypted private chats and a separate private knowledge base.
+        </p>
+        <label for="vault-password">Password</label>
+        <input
+          id="vault-password"
+          name="password"
+          type="password"
+          minlength="8"
+          maxlength="128"
+          autocomplete="current-password"
+          required
+        />
+        <div id="vault-confirm-group">
+          <label for="vault-password-confirm">Confirm password</label>
+          <input
+            id="vault-password-confirm"
+            name="password-confirm"
+            type="password"
+            minlength="8"
+            maxlength="128"
+            autocomplete="new-password"
+          />
+        </div>
+        <p class="vault-warning" id="vault-warning">
+          There is no password recovery. Without it, private chats and documents cannot be opened.
+        </p>
+        <p class="vault-error" id="vault-error" role="alert"></p>
+        <button class="vault-submit" id="vault-submit" type="submit">Create private space</button>
+      </form>
+    </dialog>
+
+    <dialog
+      class="vault-dialog delete-chat-dialog"
+      id="delete-chat-dialog"
+      aria-labelledby="delete-chat-dialog-title"
+    >
+      <form class="vault-form delete-chat-form" id="delete-chat-form">
+        <div class="delete-dialog-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" />
+            <path d="M10 11v5M14 11v5" />
+          </svg>
+        </div>
+        <p class="eyebrow">REMOVE CONVERSATION</p>
+        <h2 id="delete-chat-dialog-title">Delete this chat?</h2>
+        <p class="vault-dialog-copy" id="delete-chat-dialog-copy">
+          This conversation will be permanently removed from this browser.
+        </p>
+        <div class="delete-dialog-actions">
+          <button class="dialog-cancel" id="delete-chat-cancel" type="button">Keep chat</button>
+          <button class="dialog-delete" id="delete-chat-confirm" type="submit">Delete chat</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

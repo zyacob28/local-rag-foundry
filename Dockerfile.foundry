@@ -1,0 +1,26 @@
+FROM python:3.11-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    FOUNDRY_MODEL_CACHE_DIR=/models
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libgomp1 libstdc++6 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-foundry.txt ./
+RUN python -m pip install --no-cache-dir --upgrade pip \
+    && python -m pip install --no-cache-dir -r requirements-foundry.txt
+
+COPY foundry_main.py ./
+COPY web ./web
+COPY documents ./documents
+COPY tests ./tests
+
+RUN mkdir -p /app/data /models
+
+EXPOSE 8000
+
+CMD ["python", "foundry_main.py", "web", "--host", "0.0.0.0", "--port", "8000"]

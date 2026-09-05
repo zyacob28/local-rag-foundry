@@ -1,0 +1,27 @@
+.DS_Store
+
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+
+# RAG indexes, private vaults, and other local runtime data
+data/
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+
+# Uploaded knowledge files stay on the user's computer
+documents/*
+!documents/README.md
+
+# Local logs
+*.log

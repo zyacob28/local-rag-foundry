@@ -1,0 +1,19 @@
+services:
+  foundry-rag:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.foundry
+    ports:
+      - "127.0.0.1:8001:8000"
+    environment:
+      FOUNDRY_MODEL_CACHE_DIR: /models
+      RAG_CHAT_MODEL: qwen2.5-0.5b
+      RAG_EMBEDDING_MODEL: qwen3-embedding-0.6b
+    volumes:
+      - ./documents:/app/documents
+      - ./data:/app/data
+      - foundry-models:/models
+
+volumes:
+  foundry-models:

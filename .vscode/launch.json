@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "1. Check Ollama",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "console": "integratedTerminal",
+      "args": ["doctor"]
+    },
+    {
+      "name": "2. Index Documents",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "console": "integratedTerminal",
+      "args": ["index"]
+    },
+    {
+      "name": "3. Start RAG Chat",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "console": "integratedTerminal",
+      "args": ["chat"]
+    },
+    {
+      "name": "4. Start Browser Interface",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "console": "integratedTerminal",
+      "args": ["web"]
+    },
+    {
+      "name": "Microsoft Foundry Local (native supported systems)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/foundry_main.py",
+      "console": "integratedTerminal",
+      "args": ["web"]
+    }
+  ]
+}
